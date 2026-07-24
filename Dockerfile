@@ -12,7 +12,7 @@ RUN comfy node install --exit-on-fail comfyui-image-saver@1.16.0 || (echo "WARN:
 RUN comfy node install --exit-on-fail rgthree-comfy@1.0.2510052058 || (echo "WARN: rgthree-comfy@1.0.2510052058 unavailable in registry, falling back to latest" >&2 && comfy node install --exit-on-fail rgthree-comfy)
 
 # download models into comfyui
-RUN BACKOFFS="10 20 30 60 90" && for i in 1 2 3 4 5; do HF_TOKEN=$HF_TOKEN comfy model download --url 'https://huggingface.co/RomixERR/Qwen-Rapid-AIO-NSFW-v23/resolve/main/Qwen-Rapid-AIO-NSFW-v23.safetensors' --relative-path models/checkpoints --filename 'Qwen-Rapid-AIO-NSFW-v23.safetensors' && break; if [ $i -eq 5 ]; then echo "model-download failed after 5 attempts" >&2; exit 1; fi; SLEEP=$(echo $BACKOFFS | cut -d ' ' -f $i) && echo "model-download attempt $i failed; retrying in $SLEEP seconds" >&2; sleep $SLEEP; done
+RUN BACKOFFS="10 20 30 60 90" && for i in 1 2 3 4 5; do HF_TOKEN=$HF_TOKEN comfy model download --url 'https://huggingface.co/Phr00t/Qwen-Image-Edit-Rapid-AIO/resolve/main/v23/Qwen-Rapid-AIO-NSFW-v23.safetensors' --relative-path models/checkpoints --filename 'Qwen-Rapid-AIO-NSFW-v23.safetensors' && break; if [ $i -eq 5 ]; then echo "model-download failed after 5 attempts" >&2; exit 1; fi; SLEEP=$(echo $BACKOFFS | cut -d ' ' -f $i) && echo "model-download attempt $i failed; retrying in $SLEEP seconds" >&2; sleep $SLEEP; done
 
 # copy all input data (like images or videos) into comfyui (uncomment and adjust if needed)
 # COPY input/ /comfyui/input/
