@@ -10,8 +10,10 @@ RUN git clone https://github.com/ClownsharkBatwing/RES4LYF /comfyui/custom_nodes
 RUN comfy node install --exit-on-fail comfyui-image-saver@1.16.0 || (echo "WARN: comfyui-image-saver@1.16.0 unavailable in registry, falling back to latest" >&2 && comfy node install --exit-on-fail comfyui-image-saver)
 RUN comfy node install --exit-on-fail rgthree-comfy@1.0.2510052058 || (echo "WARN: rgthree-comfy@1.0.2510052058 unavailable in registry, falling back to latest" >&2 && comfy node install --exit-on-fail rgthree-comfy --mode remote)
 
-# models come from the attached RunPod network volume — tell ComfyUI where
-RUN printf 'vol:\n    base_path: /runpod-volume/models/\n    checkpoints: checkpoints\n    loras: loras\n    vae: vae\n    clip: clip\n    text_encoders: text_encoders\n' > /comfyui/extra_model_paths.yaml
+# models come from the attached network volume — link it into ComfyUI
+RUN printf 'vol:\n    base_path: /runpod-volume/models/\n    checkpoints: checkpoints\n    loras: loras\n    vae: vae\n    clip: clip\n    text_encoders: text_encoders\n    diffusion_models: checkpoints\n    unet: checkpoints\n' > /comfyui/extra_model_paths.yaml && \
+    rm -rf /comfyui/models/checkpoints && \
+    ln -s /runpod-volume/models/checkpoints /comfyui/models/checkpoints
 
 # user-provided inputs override the auto-generated placeholders above.
 RUN wget --progress=dot:giga -O '/comfyui/input/hf_20260702_193134_399d360db-1565-47d7-9f7c-f908229f0713.jpg' "https://cool-anteater-319.convex.cloud/api/storage/32b72bd2-0052-4da6-900d-38ec4abdbdb7"
