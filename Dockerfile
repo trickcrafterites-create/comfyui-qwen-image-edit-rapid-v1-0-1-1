@@ -11,12 +11,18 @@ RUN comfy node install --exit-on-fail comfyui-image-saver@1.16.0 || (echo "WARN:
 RUN comfy node install --exit-on-fail rgthree-comfy@1.0.2510052058 || (echo "WARN: rgthree-comfy@1.0.2510052058 unavailable in registry, falling back to latest" >&2 && comfy node install --exit-on-fail rgthree-comfy --mode remote)
 
 # models come from the attached network volume — link it into ComfyUI
-RUN printf 'vol:\n    base_path: /runpod-volume/models/\n    checkpoints: checkpoints\n    loras: loras\n    vae: vae\n    clip: clip\n    text_encoders: text_encoders\n    diffusion_models: checkpoints\n    unet: checkpoints\n' > /comfyui/extra_model_paths.yaml && \
-    rm -rf /comfyui/models/checkpoints && \
-    mkdir -p /runpod-volume/models/checkpoints && \
-    ln -s /runpod-volume/models/checkpoints /comfyui/models/checkpoints
-
 RUN pip install --no-cache-dir pywavelets
+
+RUN printf '%s\n' \
+  '#!/usr/bin/env bash' \
+  'echo "AELIX: volume root:"; ls -la /runpod-volume/ 2>&1 | head -40' \
+  'rm -rf /comfyui/models/checkpoints; mkdir -p /comfyui/models/checkpoints' \
+  'find /runpod-volume -maxdepth 6 -iname "*.safetensors" 2>/dev/null | while read -r f; do echo "AELIX: linking $f"; ln -sf "$f" "/comfyui/models/checkpoints/$(basename "$f")"; done' \
+  'echo "AELIX: checkpoints now:"; ls -la /comfyui/models/checkpoints/' \
+  'exec /start.sh' \
+  > /aelix-start.sh && chmod +x /aelix-start.sh
+CMD ["/aelix-start.sh"]
+
 
 
 # user-provided inputs override the auto-generated placeholders above.
