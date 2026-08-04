@@ -13,7 +13,9 @@ RUN comfy node install --exit-on-fail rgthree-comfy@1.0.2510052058 || (echo "WAR
 # models come from the attached network volume — link it into ComfyUI
 RUN printf 'vol:\n    base_path: /runpod-volume/models/\n    checkpoints: checkpoints\n    loras: loras\n    vae: vae\n    clip: clip\n    text_encoders: text_encoders\n    diffusion_models: checkpoints\n    unet: checkpoints\n' > /comfyui/extra_model_paths.yaml && \
     rm -rf /comfyui/models/checkpoints && \
+    mkdir -p /runpod-volume/models/checkpoints && \
     ln -s /runpod-volume/models/checkpoints /comfyui/models/checkpoints
+
 RUN pip install --no-cache-dir pywavelets
 
 
