@@ -16,5 +16,6 @@ RUN printf 'vol:\n    base_path: /runpod-volume/models/\n    checkpoints: checkp
     ln -s /runpod-volume/models/checkpoints /comfyui/models/checkpoints
 RUN pip install --no-cache-dir pywavelets
 
+
 # user-provided inputs override the auto-generated placeholders above.
 RUN wget --progress=dot:giga -O '/comfyui/input/hf_20260702_193134_399d360db-1565-47d7-9f7c-f908229f0713.jpg' "https://cool-anteater-319.convex.cloud/api/storage/32b72bd2-0052-4da6-900d-38ec4abdbdb7"
